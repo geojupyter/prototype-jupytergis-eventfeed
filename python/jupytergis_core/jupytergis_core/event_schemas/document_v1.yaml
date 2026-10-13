@@ -1,0 +1,23 @@
+"$id": https://schema.jupytergis.org/events/document/v1
+version: 1
+title: JupyterGIS Document Event
+description: A JupyterGIS document was opened, closed, or made active in the GUI.
+type: object
+required:
+  - action
+  - document_path
+properties:
+  action:
+    title: "Action"
+    description: "Document lifecycle action"
+    enum:
+      - opened
+      - closed
+  document_path:
+    title: "Document path"
+    description: "Path of .jGIS document"
+    type: string
+  actor:
+    title: "Actor"
+    description: "Client ID of acting user, if available"
+    type: string
