@@ -42,7 +42,13 @@ class EventSchemaCase:
 EVENT_SCHEMA_CASES: tuple[EventSchemaCase, ...] = (
     EventSchemaCase(
         id=DOCUMENT_SCHEMA_ID,
-        event={"action": "opened", "document_path": "example.jgis", "actor": "42"},
+        event={
+            "subject": "42",
+            "verb": "opened",
+            "object": {
+                "document_path": "example.jgis",
+            },
+        },
     ),
 )
 
@@ -71,4 +77,4 @@ def test_valid_events_emit(event_schema_case: EventSchemaCase) -> None:
 def test_invalid_document_event_is_rejected() -> None:
     logger, _ = _make_logger()
     with pytest.raises(jsonschema.ValidationError, match="is a required property"):
-        logger.emit(schema_id=DOCUMENT_SCHEMA_ID, data={"action": "banana"})
+        logger.emit(schema_id=DOCUMENT_SCHEMA_ID, data={"verb": "banana"})
