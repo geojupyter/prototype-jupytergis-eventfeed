@@ -1,7 +1,7 @@
 "$id": "https://schema.jupytergis.org/events/document/v1"
 version: "1"
 title: "JupyterGIS Document Event"
-description: "A JupyterGIS document was opened or closed (either as standalone or in a widget) in the GUI."
+description: "A JupyterGIS document was opened or closed (either as standalone document or in a Notebook widget) in the GUI."
 type: "object"
 required:
   - "verb"
