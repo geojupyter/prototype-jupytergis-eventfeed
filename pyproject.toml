@@ -23,7 +23,9 @@ typecheck = [
     "mypy",
     "PyQt5-stubs",
     "types-geopandas",
+    "types-jsonschema",
     "types-requests",
+    "types-pyyaml",
 ]
 build = [
     "build",

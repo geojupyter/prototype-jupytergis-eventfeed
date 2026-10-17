@@ -1,3 +1,4 @@
+import { eventFeedPlugin } from './eventFeed/plugin';
 import jgisPlugin from './jgisplugin/plugins';
 import {
   externalCommandRegistryPlugin,
@@ -17,4 +18,5 @@ export default [
   layerBrowserRegistryPlugin,
   annotationPlugin,
   tourPlugin,
+  eventFeedPlugin,
 ];
