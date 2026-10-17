@@ -27,7 +27,7 @@ async def stream_events(*, base_url: str, token: str) -> None:
             schema_id = event.get("schema_id", "")
             if not schema_id.startswith(EVENT_SCHEMA_PREFIX):
                 continue
-            obj = event.get("object", {})
+
             print(json.dumps(event, indent=2))
             print()
 
@@ -37,5 +37,5 @@ if __name__ == "__main__":
         stream_events(
             base_url=os.environ.get("JUPYTER_BASE_URL", "localhost:8888"),
             token=os.environ["JUPYTER_TOKEN"],
-        )
+        ),
     )
