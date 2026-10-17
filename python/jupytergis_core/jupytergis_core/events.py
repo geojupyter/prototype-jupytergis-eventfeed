@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from jupyter_server.serverapp import ServerApp
 
+EVENT_SCHEMA_PREFIX = "https://schema.jupytergis.org/"
 EVENT_SCHEMAS_DIR = Path(__file__).parent / "event_schemas"
 EVENT_SCHEMAS = tuple(EVENT_SCHEMAS_DIR.glob("*.yaml"))
 
