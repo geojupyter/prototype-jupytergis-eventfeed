@@ -63,7 +63,7 @@ flowchart TD
 
 ### Components
 
-#### The event schemas 
+#### The event schemas
 
 `python/jupytergis_core/jupytergis_core/event_schemas/*.yaml`
 
@@ -87,7 +87,7 @@ only requires adding a schema file in the correct dir.
 The emitter plugin connects `JupyterGISModel` signals and the document tracker to
 `app.serviceManager.events.emit()`, mapping signals to structured events.
 
-#### The HTTP events API 
+#### The HTTP events API
 
 `POST /api/events` and `GET /api/events/subscribe`
 
