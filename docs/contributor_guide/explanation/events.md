@@ -271,18 +271,13 @@ An event might look like this (not an actual event, just an example):
   "object": {
     "document_path": "examples/france_hiking.jGIS"
   },
-  "__timestamp__": "2026-10-14T18:22:03.511Z",
-  "__schema__": "https://schema.jupytergis.org/events/document/v1",
-  "__schema_version__": "1",
-  "__metadata_version__": 1
 }
 ```
 
-You might notice that `__schema__` is a duplicate of `schema_id`.
-Consumers should filter on `schema_id`.
-
 :::{note}
-TODO: Validate
+A timestamp isn't included on this event.
+A request was opened to allow opt-in to subscribing to events with metadata here:
+<https://github.com/jupyter-server/jupyter_server/issues/1710>
 :::
 
 
