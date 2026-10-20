@@ -62,10 +62,13 @@ export const eventFeedPlugin: JupyterFrontEndPlugin<void> = {
         });
       });
 
-      // HACK: When the document loads, all the existing layers come through as
-      // 'added' events. Connecting before the document loads results in a bunch of "added" spam.
-      const ready = 'context' in widget ? widget.context.ready : Promise.resolve();
-      void ready.then(() => {
+      // When the document loads, all the existing layers come through as
+      // 'added' events (among other events). Connecting before the document
+      // loads results in a bunch of "added" spam as those signals fire. We
+      // only care about the events triggered by the user intentionally, so we
+      // wait until the document's initial sync is complete to wire these
+      // signals.
+      void widget.model.sharedModel.initialSyncReady.then(() => {
         widget.model.sharedLayersChanged.connect((_, change) => {
           for (const { id, oldValue, newValue } of change.layerChange ?? []) {
             const verb = !oldValue ? 'added' : !newValue ? 'removed' : 'updated';
