@@ -1,6 +1,6 @@
 "$id": "https://schema.jupytergis.org/events/layer/v1"
 version: "1"
-title: "JupyterGIS Layer Event"
+title: "JupyterGIS layer event"
 description: "A JupyterGIS layer was created, deleted, or updated in the GUI."
 type: "object"
 required:
