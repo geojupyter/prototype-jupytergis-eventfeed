@@ -601,10 +601,11 @@ export class JupyterGISDoc
         if (!needEmit) {
           needEmit = true;
         }
+        const raw = event.target.toJSON()[key];
         changes.push({
           id: key,
           oldValue: change.oldValue,
-          newValue: JSONExt.deepCopy(event.target.toJSON()[key]),
+          newValue: raw === undefined ? undefined : JSONExt.deepCopy(raw),
         });
       });
     });
@@ -630,9 +631,10 @@ export class JupyterGISDoc
         if (!needEmit) {
           needEmit = true;
         }
+        const raw = event.target.toJSON()[key];
         changes.push({
           id: key,
-          newValue: JSONExt.deepCopy(event.target.toJSON()[key]),
+          newValue: raw === undefined ? undefined : JSONExt.deepCopy(raw),
         });
       });
     });
@@ -653,9 +655,10 @@ export class JupyterGISDoc
         if (!needEmit) {
           needEmit = true;
         }
+        const raw = event.target.toJSON()[key];
         changes.push({
           id: key,
-          newValue: JSONExt.deepCopy(event.target.toJSON()[key]),
+          newValue: raw === undefined ? undefined : JSONExt.deepCopy(raw),
         });
       });
     });
