@@ -9,8 +9,10 @@ import {
   JupyterFrontEndPlugin,
 } from '@jupyterlab/application';
 import type { Event } from '@jupyterlab/services';
+import type { JSONObject } from '@lumino/coreutils';
 
 const DOCUMENT_SCHEMA = 'https://schema.jupytergis.org/events/document/v1';
+const LAYER_SCHEMA = 'https://schema.jupytergis.org/events/layer/v1';
 
 export const eventFeedPlugin: JupyterFrontEndPlugin<void> = {
   id: 'jupytergis:core:event-feed',
@@ -26,7 +28,7 @@ export const eventFeedPlugin: JupyterFrontEndPlugin<void> = {
       });
     };
 
-    const wireDocumentEvents = (widget: IJupyterGISWidget): void => {
+    const wireJupyterGISEvents = (widget: IJupyterGISWidget): void => {
       // Two widgets can share the same model. We only want to connect these
       // handlers once per document
       if (wiredModels.has(widget.model)) {
@@ -59,9 +61,37 @@ export const eventFeedPlugin: JupyterFrontEndPlugin<void> = {
           },
         });
       });
+
+      // HACK: When the document loads, all the existing layers come through as
+      // 'added' events. Connecting before the document loads results in a bunch of "added" spam.
+      const ready = 'context' in widget ? widget.context.ready : Promise.resolve();
+      void ready.then(() => {
+        widget.model.sharedLayersChanged.connect((_, change) => {
+          for (const { id, oldValue, newValue } of change.layerChange ?? []) {
+            const verb = !oldValue ? 'added' : !newValue ? 'removed' : 'updated';
+
+            emit({
+              schema_id: LAYER_SCHEMA,
+              version: '1',
+              data: {
+                subject,
+                verb,
+                object: {
+                  document_path: documentPath,
+                  layer_id: id,
+                  ...(oldValue ? { old: oldValue as unknown as JSONObject } : {}),  // TODO: Better typing
+                  ...(newValue ? { new: newValue as unknown as JSONObject } : {}),  // TODO: Better typing
+                },
+              },
+            });
+          }
+        });
+      });
+
+
     };
 
-    tracker.forEach(wireDocumentEvents);
-    tracker.widgetAdded.connect((_, widget) => wireDocumentEvents(widget));
+    tracker.forEach(wireJupyterGISEvents);
+    tracker.widgetAdded.connect((_, widget) => wireJupyterGISEvents(widget));
   },
 };

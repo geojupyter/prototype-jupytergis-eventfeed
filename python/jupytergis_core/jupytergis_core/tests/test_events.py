@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 
 EVENTS_SCHEMA_NAMESPACE = "https://schema.jupytergis.org/events"
 DOCUMENT_SCHEMA_ID = f"{EVENTS_SCHEMA_NAMESPACE}/document/v1"
+LAYER_SCHEMA_ID = f"{EVENTS_SCHEMA_NAMESPACE}/layer/v1"
 
 
 def _fake_server_app(*, event_logger: EventLogger) -> ServerApp:
@@ -47,6 +48,26 @@ EVENT_SCHEMA_CASES: tuple[EventSchemaCase, ...] = (
             "verb": "opened",
             "object": {
                 "document_path": "example.jgis",
+            },
+        },
+    ),
+    EventSchemaCase(
+        id=LAYER_SCHEMA_ID,
+        event={
+            "subject": "42",
+            "verb": "added",
+            "object": {
+                "document_path": "earthquakes.jgis",
+                "layer_id": "layer-1",
+                "new": {
+                    "type": "VectorLayer",
+                    "name": "earthquakes",
+                    "visible": True,
+                    "parameters": {
+                        "source": "source-1",
+                        "opacity": 1,
+                    },
+                },
             },
         },
     ),
