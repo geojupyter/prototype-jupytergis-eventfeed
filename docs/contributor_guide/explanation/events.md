@@ -2,39 +2,37 @@
 
 JupyterGIS can publish a stream of **GUI-originated events**, for example:
 
-* A user opened a document
-* A user added a layer
-* A user lingered the viewport on a geographic area
+- A user opened a document
+- A user added a layer
+- A user lingered the viewport on a geographic area
 
 Tools outside JupyterGIS can subscribe to these events.
 
 This document explains why that stream exists, how consumers can use it, and what you (a
 contributor) need to do when you add a feature that should emit an event.
 
-
 ## Using this prototype
 
 ### Clone the prototype
 
-* Clone the repository:
+- Clone the repository:
 
   ```bash
   git clone git@github.com:geojupyter/prototype-jupytergis-eventfeed.git
   ```
 
-* Change directory:
+- Change directory:
 
- ```
- cd prototype-jupytergis-eventfeed
- ```
-
+```
+cd prototype-jupytergis-eventfeed
+```
 
 ### Start up the stack
 
-* Follow the [](/contributor_guide/development_setup.md) instructions to create a Mamba
+- Follow the [](/contributor_guide/development_setup.md) instructions to create a Mamba
   environment and install JupyterGIS from source.
-* Start JupyterLab **from the activated mamba environment**: `jupyter lab`.
-* Get the token from the JupyterLab logs output from the previous step. E.g., from the
+- Start JupyterLab **from the activated mamba environment**: `jupyter lab`.
+- Get the token from the JupyterLab logs output from the previous step. E.g., from the
   following output, copy the `<my-token>` value.:
 
   ```text
@@ -43,7 +41,7 @@ contributor) need to do when you add a feature that should emit an event.
         http://127.0.0.1:8888/lab?token=<my-token>
   ```
 
-* Start up the consumer **from an activated mamba environment in a separate terminal
+- Start up the consumer **from an activated mamba environment in a separate terminal
   window**:
 
   ```bash
@@ -55,13 +53,12 @@ contributor) need to do when you add a feature that should emit an event.
 
 In JupyterLab:
 
-* Open a JGIS document, and observe that the consumer prints out the relevant event.
-* Add a layer to the project, and observe that the consumer prints out the relevant event.
-* Remove the layer from the project, and observe that the consumer prints out the relevant event.
-* Change the layer symbology, and observe that the consumer prints out the relevant event.
-* Move the viewport, wait 10 seconds, and observe that the consumer prints out the relevant event.
-* Close the document, and observe that the consumer prints out the relevant event.
-
+- Open a JGIS document, and observe that the consumer prints out the relevant event.
+- Add a layer to the project, and observe that the consumer prints out the relevant event.
+- Remove the layer from the project, and observe that the consumer prints out the relevant event.
+- Change the layer symbology, and observe that the consumer prints out the relevant event.
+- Move the viewport, wait 10 seconds, and observe that the consumer prints out the relevant event.
+- Close the document, and observe that the consumer prints out the relevant event.
 
 ## Why emit events?
 
@@ -72,7 +69,6 @@ remember and repeat their GUI-based workflow.
 
 This is driven by the [_GeoJupyter Trail_](https://github.com/geojupyter/trail)
 project's design.
-
 
 (which-events-matter)=
 
@@ -85,7 +81,6 @@ GUI events that are important elements of the user's workflow or data exploratio
 in scope for this system.
 The implementation will be progressive, so if you're interested in an event that is not
 currently emitted, please open an issue or PR :)
-
 
 ## Architecture
 
@@ -142,10 +137,10 @@ The events API is provided by
 [`jupyter_server.services.events`](https://jupyter-server.readthedocs.io/en/stable/api/jupyter_server.services.events.html),
 not by JupyterGIS.
 
-* `POST /api/events` receives what `serviceManager.events.emit()` sends.
+- `POST /api/events` receives what `serviceManager.events.emit()` sends.
   It validates the payload against the schema registered under that `schema_id`, then
   passes the event to the server's event bus.
-* `GET /api/events/subscribe` is a WebSocket feed.
+- `GET /api/events/subscribe` is a WebSocket feed.
   It rebroadcasts every event the server emits to every authenticated subscriber.
 
 :::{important}
@@ -158,10 +153,8 @@ There is no server-side filtering by schema either, so consumers must filter by 
 themselves (see [The event feed carries everything](#event-feed-has-everything)).
 :::
 
-
 Emitting from the browser onto this API is the pattern used by
 [jupyterlab-telemetry](https://github.com/jupyterlab/jupyterlab-telemetry/blob/master/design.md).
-
 
 ## Anatomy of events
 
@@ -169,12 +162,10 @@ Emitting from the browser onto this API is the pattern used by
 
 An event schema `$id` will always look like: `https://schema.jupytergis.org/events/<object>/v<version>`
 
-
 ### Subject
 
 The thing performing the verb.
 This is usually a user (client ID).
-
 
 ### Verb
 
@@ -182,7 +173,6 @@ The action being performed on the object.
 For example, verbs in the "document" object might be "opened" and "closed".
 
 Verbs should always be past tense ("added", not "add").
-
 
 ### Object
 
@@ -199,13 +189,11 @@ A document path is not a unique identifier for a document.
 We're ignoring this problem right now.
 :::
 
-
 ### Order of fields
 
 For human readability, always pass Subject first, then Verb, then Object.
 As in English: "Sally presented the lecture."
 Subject: Sally; Verb: Presented; Object: Lecture.
-
 
 ## Adding a new event
 
@@ -226,7 +214,6 @@ When you add a feature that should be visible to event consumers:
    (`examples/event_feed_consumer/consumer.py`) while you perform the action in the
    GUI.
    This step is important: see [Failures are silent](#failures-are-silent).
-
 
 ## Pitfalls
 
@@ -252,7 +239,6 @@ Depending on where the event was emitted from, the behavior is different:
 Our tests check the event stream for expected content, and when testing manually you
 should do this too.
 
-
 ### `version` must be a quoted string
 
 `jupyter_events` requires the `version` to be a string, e.g. `version: '1'`.
@@ -265,17 +251,15 @@ You must quote it to parse it as a string.
 Consider defensively quoting all strings so they are explicitly known to be strings.
 :::
 
-
 (event-feed-has-everything)=
 
 ### The event feed carries everything
 
-`/api/events/subscribe` rebroadcasts *every* event the server emits, including
+`/api/events/subscribe` rebroadcasts _every_ event the server emits, including
 `jupyter_server`'s own.
 Consumers filter client-side on the `https://schema.jupytergis.org/` prefix.
 Per-schema subscription endpoints are only a partially implemented server feature;
 prefix filtering is the reliable approach.
-
 
 ### High-frequency events need throttling
 
@@ -286,7 +270,6 @@ When we implement high frequency events we need to think about the proper way to
 throttle them.
 For viewport pan/zoom, we should start out with only firing these events after the
 animation has settled for a fixed period of time (i.e. the viewport is "lingering").
-
 
 (evolving-a-schema)=
 
@@ -300,7 +283,6 @@ while consumers migrate.
 
 Additive changes like a new optional property or a new `verb` value can go into the
 existing version without releasing a new one.
-
 
 ## Consuming the feed
 
@@ -323,7 +305,7 @@ An event might look like this (not an actual event, just an example):
   "verb": "opened",
   "object": {
     "document_path": "examples/france_hiking.jGIS"
-  },
+  }
 }
 ```
 
@@ -332,7 +314,6 @@ A timestamp isn't included on this event.
 A request was opened to allow opt-in to subscribing to events with metadata here:
 <https://github.com/jupyter-server/jupyter_server/issues/1710>
 :::
-
 
 ## Alternatives considered
 
@@ -349,7 +330,6 @@ JupyterGIS:
    using [`jupyter_events`](https://github.com/jupyter/jupyter_events).
 
 We chose the third option!
-
 
 ## Further reading
 
