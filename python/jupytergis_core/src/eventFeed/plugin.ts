@@ -12,17 +12,69 @@ import {
 import type { Event } from '@jupyterlab/services';
 import type { JSONObject } from '@lumino/coreutils';
 
-const DOCUMENT_SCHEMA = 'https://schema.jupytergis.org/events/document/v1';
-const LAYER_SCHEMA = 'https://schema.jupytergis.org/events/layer/v1';
-
-interface IEventWiring {
-  model: IJupyterGISModel;
+interface IEventWiringProps {
+  widget: IJupyterGISWidget;
   clientId: string;
   emit: (request: Event.Request) => void;
 }
 
+const wireDocumentEvents = (
+  {widget, clientId, emit}: IEventWiringProps,
+): void => {
+  const DOCUMENT_SCHEMA = 'https://schema.jupytergis.org/events/document/v1';
+
+  emit({
+    schema_id: DOCUMENT_SCHEMA,
+    version: '1',
+    data: {
+      subject: clientId,
+      verb: 'opened',
+      object: { document_path: widget.model.filePath || null },
+    },
+  });
+
+  widget.disposed.connect(() => {
+    emit({
+      schema_id: DOCUMENT_SCHEMA,
+      version: '1',
+      data: {
+        subject: clientId,
+        verb: 'closed',
+        object: { document_path: widget.model.filePath || null },
+      },
+    });
+  });
+};
+
+const wireLayerEvents = (
+  {widget, clientId, emit}: IEventWiringProps,
+): void => {
+  const LAYER_SCHEMA = 'https://schema.jupytergis.org/events/layer/v1';
+
+  widget.model.sharedLayersChanged.connect((_, change) => {
+    for (const { id, oldValue, newValue } of change.layerChange ?? []) {
+      const verb = !oldValue ? 'added' : !newValue ? 'removed' : 'updated';
+
+      emit({
+        schema_id: LAYER_SCHEMA,
+        version: '1',
+        data: {
+          subject: clientId,
+          verb,
+          object: {
+            document_path: widget.model.filePath || null,
+            layer_id: id,
+            ...(oldValue ? { old: oldValue as unknown as JSONObject } : {}),  // TODO: Better typing
+            ...(newValue ? { new: newValue as unknown as JSONObject } : {}),  // TODO: Better typing
+          },
+        },
+      });
+    }
+  });
+};
+
 const wireViewportEvents = (
-  {model, clientId, emit}: IEventWiring,
+  {widget, clientId, emit}: IEventWiringProps,
 ): void => {
   const VIEWPORT_SCHEMA = 'https://schema.jupytergis.org/events/viewport/v1';
   // Awareness syncs the viewport every 200ms while the map move, which is too
@@ -44,7 +96,7 @@ const wireViewportEvents = (
         subject: clientId,
         verb: 'moved',
         object: {
-          document_path: model.filePath || null,
+          document_path: widget.model.filePath || null,
           new: pendingViewportState as unknown as JSONObject,
         },
       },
@@ -52,7 +104,7 @@ const wireViewportEvents = (
     pendingViewportState = undefined;
   };
 
-  model.viewportStateChanged.connect((_, change) => {
+  widget.model.viewportStateChanged.connect((_, change) => {
     // Collaborators' viewports arrive here too. Only our own movement counts.
     if (!change.isLocalClient || !change.currentValue?.value) {
       return;
@@ -96,59 +148,23 @@ export const eventFeedPlugin: JupyterFrontEndPlugin<void> = {
 
       wiredModels.add(widget.model);
 
-      const clientId = String(widget.model.getClientId());
+      const eventWiringProps: IEventWiringProps = {
+        widget: widget,
+        clientId: String(widget.model.getClientId()),
+        emit: emit,
+      };
 
-      emit({
-        schema_id: DOCUMENT_SCHEMA,
-        version: '1',
-        data: {
-          subject: clientId,
-          verb: 'opened',
-          object: { document_path: widget.model.filePath || null },
-        },
-      });
+      wireDocumentEvents(eventWiringProps);
 
-      widget.disposed.connect(() => {
-        emit({
-          schema_id: DOCUMENT_SCHEMA,
-          version: '1',
-          data: {
-            subject: clientId,
-            verb: 'closed',
-            object: { document_path: widget.model.filePath || null },
-          },
-        });
-      });
-
-      // When the document loads, all the existing layers come through as
-      // 'added' events (among other events). Connecting before the document
-      // loads results in a bunch of "added" spam as those signals fire. We
-      // only care about the events triggered by the user intentionally, so we
-      // wait until the document's initial sync is complete to wire these
-      // signals.
+      // When the document loads, a bunch of signals come through, e.g. all the
+      // existing layers come through as 'added' events (among other events).
+      // Connecting before the document loads results in a bunch of "added"
+      // spam as those signals fire. We only care about the events triggered by
+      // the user intentionally, so we wait until the document's initial sync
+      // is complete to wire these signals.
       void widget.model.sharedModel.initialSyncReady.then(() => {
-        widget.model.sharedLayersChanged.connect((_, change) => {
-          for (const { id, oldValue, newValue } of change.layerChange ?? []) {
-            const verb = !oldValue ? 'added' : !newValue ? 'removed' : 'updated';
-
-            emit({
-              schema_id: LAYER_SCHEMA,
-              version: '1',
-              data: {
-                subject: clientId,
-                verb,
-                object: {
-                  document_path: widget.model.filePath || null,
-                  layer_id: id,
-                  ...(oldValue ? { old: oldValue as unknown as JSONObject } : {}),  // TODO: Better typing
-                  ...(newValue ? { new: newValue as unknown as JSONObject } : {}),  // TODO: Better typing
-                },
-              },
-            });
-          }
-        });
-
-        wireViewportEvents({model: widget.model, clientId: clientId, emit: emit});
+        wireLayerEvents(eventWiringProps);
+        wireViewportEvents(eventWiringProps);
       });
     };
 
