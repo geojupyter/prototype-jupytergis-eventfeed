@@ -1,0 +1,58 @@
+"$id": "https://schema.jupytergis.org/events/viewport/v1"
+version: "1"
+title: "JupyterGIS viewport event"
+description: "A JupyterGIS map viewport was moved in the GUI."
+type: "object"
+required:
+  - "verb"
+  - "object"
+properties:
+  subject:
+    title: "Subject"
+    description: "The performer of `verb`. Client ID of acting user, if available."
+    type: "string"
+  verb:
+    title: "Verb"
+    description: "What happened to the viewport."
+    enum:
+      - "moved"
+  object:
+    title: "Object"
+    description: "The thing that `verb` was performed on."
+    type: "object"
+    required:
+      - "document_path"
+      - "new"
+    properties:
+      document_path:
+        title: "Document path"
+        description: "The path of the `.jGIS` document, or `null` if ephemeral."
+        type: ["string", "null"]
+      new:
+        title: "New value"
+        description: "The viewport after the move, in the map's projection."
+        type: "object"
+        properties:
+          coordinates:
+            title: "Coordinates"
+            description: "Center of the viewport, in projection units."
+            type: "object"
+            properties:
+              x:
+                title: "X coordinate"
+                description: "Horizontal coordinate of the viewport center."
+                type: "number"
+              y:
+                title: "Y coordinate"
+                description: "Vertical coordinate of the viewport center."
+                type: "number"
+          zoom:
+            title: "Zoom"
+            description: "Zoom level of the viewport."
+            type: "number"
+          extent:
+            title: "Extent"
+            description: "Bounding box of the visible area, in projection units."
+            type: "array"
+            items:
+              type: "number"

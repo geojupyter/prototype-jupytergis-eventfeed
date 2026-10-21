@@ -1,0 +1,48 @@
+"$id": "https://schema.jupytergis.org/events/layer/v1"
+version: "1"
+title: "JupyterGIS layer event"
+description: "A JupyterGIS layer was created, deleted, or updated in the GUI."
+type: "object"
+required:
+  - "verb"
+  - "object"
+properties:
+  subject:
+    title: "Subject"
+    description: "The performer of `verb`. Client ID of acting user, if available."
+    type: "string"
+  verb:
+    title: "Verb"
+    description: "Layer action"
+    enum:
+      - "added"
+      - "updated"
+      - "removed"
+  object:
+    title: "Object"
+    description: "The thing that `verb` was performed on."
+    type: "object"
+    required:
+      - "document_path"
+      - "layer_id"
+    properties:
+      document_path:
+        title: "Document path"
+        description: "The path of the `.jGIS` document, or `null` if ephemeral."
+        type: ["string", "null"]
+      layer_id:
+        title: "Layer ID"
+        description: "Unique ID of the layer."
+        type: "string"
+      old:
+        title: "Old value"
+        description: "The layer object as it was before `verb`. Absent for 'added' `verb`."
+        type: "object"
+        # TODO: The actual shape of a layer object! How to "import" that knowledge from packages/schemas?
+        # properties:
+      new:
+        title: "New value"
+        description: "The layer object as it is after `verb`. Absent for 'deleted' `verb`."
+        type: "object"
+        # TODO: The actual shape of a layer object! How to "import" that knowledge from packages/schemas?
+        # properties:

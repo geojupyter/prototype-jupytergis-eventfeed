@@ -30,8 +30,10 @@ def _load_jupyter_server_extension(server_app):
         JupyterLab application instance
 
     """
+    from .events import register_event_schemas
     from .handler import setup_handlers
 
     setup_handlers(server_app.web_app)
+    register_event_schemas(server_app=server_app)
     name = "jupytergis_core"
     print(f"Registered {name} server extension")
