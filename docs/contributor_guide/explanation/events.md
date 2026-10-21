@@ -23,9 +23,9 @@ contributor) need to do when you add a feature that should emit an event.
 
 - Change directory:
 
-```
-cd prototype-jupytergis-eventfeed
-```
+  ```bash
+  cd prototype-jupytergis-eventfeed
+  ```
 
 ### Start up the stack
 
