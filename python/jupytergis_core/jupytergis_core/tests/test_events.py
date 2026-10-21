@@ -19,6 +19,7 @@ if TYPE_CHECKING:
 EVENTS_SCHEMA_NAMESPACE = "https://schema.jupytergis.org/events"
 DOCUMENT_SCHEMA_ID = f"{EVENTS_SCHEMA_NAMESPACE}/document/v1"
 LAYER_SCHEMA_ID = f"{EVENTS_SCHEMA_NAMESPACE}/layer/v1"
+VIEWPORT_SCHEMA_ID = f"{EVENTS_SCHEMA_NAMESPACE}/viewport/v1"
 
 
 def _fake_server_app(*, event_logger: EventLogger) -> ServerApp:
@@ -67,6 +68,21 @@ EVENT_SCHEMA_CASES: tuple[EventSchemaCase, ...] = (
                         "source": "source-1",
                         "opacity": 1,
                     },
+                },
+            },
+        },
+    ),
+    EventSchemaCase(
+        id=VIEWPORT_SCHEMA_ID,
+        event={
+            "subject": "42",
+            "verb": "moved",
+            "object": {
+                "document_path": "example.jgis",
+                "new": {
+                    "coordinates": {"x": 260_000.0, "y": 6_250_000.0},
+                    "zoom": 12,
+                    "extent": [250_000.0, 6_240_000.0, 270_000.0, 6_260_000.0],
                 },
             },
         },
