@@ -77,7 +77,7 @@ const wireViewportEvents = (
   {widget, clientId, emit}: IEventWiringProps,
 ): void => {
   const VIEWPORT_SCHEMA = 'https://schema.jupytergis.org/events/viewport/v1';
-  // Awareness syncs the viewport every 200ms while the map move, which is too
+  // Awareness syncs the viewport every 200ms while the map moves, which is too
   // noisy for an event feed, so we throttle harder.
   // TODO: Should throttling be the client's responsibility?
   const VIEWPORT_SETTLE_MS = 10_000;
@@ -120,8 +120,6 @@ const wireViewportEvents = (
       VIEWPORT_SETTLE_MS,
     );
   });
-
-
 };
 
 
@@ -141,7 +139,7 @@ export const eventFeedPlugin: JupyterFrontEndPlugin<void> = {
 
     const wireJupyterGISEvents = (widget: IJupyterGISWidget): void => {
       // Two widgets can share the same model. We only want to connect these
-      // handlers once per document
+      // handlers once per document.
       if (wiredModels.has(widget.model)) {
         return;
       }
