@@ -6,14 +6,45 @@ JupyterGIS can publish a stream of **GUI-originated events**, for example:
 * A user added a layer
 * A user lingered the viewport on a geographic area
 
-:::{note}
-Not all of these events are necessarily implemented.
-:::
-
 Tools outside JupyterGIS can subscribe to these events.
 
 This document explains why that stream exists, how consumers can use it, and what you (a
 contributor) need to do when you add a feature that should emit an event.
+
+
+## Using this prototype
+
+### Start up the stack
+
+* Follow the [](/contributor_guide/development_setup.md) instructions to create a Mamba
+  environment and install JupyterGIS from source.
+* Start JupyterLab **from the activated mamba environment**: `jupyter lab`.
+* Get the token from the JupyterLab logs output from the previous step. E.g., from the
+  following output, copy the `<my-token>` value.:
+
+  ```
+      Or copy and paste one of these URLs:
+        http://localhost:8888/lab?token=<my-token>
+        http://127.0.0.1:8888/lab?token=<my-token>
+  ```
+* Start up the consumer **from an activated mamba environment in a separate terminal
+  window**:
+
+  ```bash
+  export JUPYTER_TOKEN=<paste-my-token-here>
+  uv run examples/event_feed_consumer/consumer.py
+  ```
+
+### Manual testing
+
+In JupyterLab:
+
+* Open a JGIS document, and observe that the consumer prints out the relevant event.
+* Add a layer to the project, and observe that the consumer prints out the relevant event.
+* Remove the layer from the project, and observe that the consumer prints out the relevant event.
+* Change the layer symbology, and observe that the consumer prints out the relevant event.
+* Move the viewport, wait 10 seconds, and observe that the consumer prints out the relevant event.
+* Close the document, and observe that the consumer prints out the relevant event.
 
 
 ## Why emit events?
