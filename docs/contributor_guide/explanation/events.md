@@ -13,6 +13,10 @@ contributor) need to do when you add a feature that should emit an event.
 
 ## Using this prototype
 
+This prototype
+([changeset](https://github.com/geojupyter/prototype-jupytergis-eventfeed/pull/4))
+is ready for testing!
+
 ### Clone the prototype
 
 - Clone the repository:
