@@ -14,6 +14,21 @@ contributor) need to do when you add a feature that should emit an event.
 
 ## Using this prototype
 
+### Clone the prototype
+
+* Clone the repository:
+
+  ```bash
+  git clone git@github.com:geojupyter/prototype-jupytergis-eventfeed.git
+  ```
+
+* Change directory:
+
+ ```
+ cd prototype-jupytergis-eventfeed
+ ```
+
+
 ### Start up the stack
 
 * Follow the [](/contributor_guide/development_setup.md) instructions to create a Mamba
