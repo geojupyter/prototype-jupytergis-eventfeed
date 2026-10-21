@@ -146,6 +146,12 @@ Object.
 A `document_path` must always be present in an Object, but it can be `null` in the case
 of ephemeral documents (e.g. ones created without a name via the Python API `GISDocument()`).
 
+:::{important}
+A document path is not a unique identifier for a document.
+"Save as..." can change the document's path in the middle of an event stream.
+We're ignoring this problem right now.
+:::
+
 
 ### Order of fields
 
