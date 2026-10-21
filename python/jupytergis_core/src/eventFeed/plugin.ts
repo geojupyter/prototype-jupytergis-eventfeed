@@ -18,9 +18,11 @@ interface IEventWiringProps {
   emit: (request: Event.Request) => void;
 }
 
-const wireDocumentEvents = (
-  {widget, clientId, emit}: IEventWiringProps,
-): void => {
+const wireDocumentEvents = ({
+  widget,
+  clientId,
+  emit,
+}: IEventWiringProps): void => {
   const DOCUMENT_SCHEMA = 'https://schema.jupytergis.org/events/document/v1';
 
   emit({
@@ -46,9 +48,11 @@ const wireDocumentEvents = (
   });
 };
 
-const wireLayerEvents = (
-  {widget, clientId, emit}: IEventWiringProps,
-): void => {
+const wireLayerEvents = ({
+  widget,
+  clientId,
+  emit,
+}: IEventWiringProps): void => {
   const LAYER_SCHEMA = 'https://schema.jupytergis.org/events/layer/v1';
 
   widget.model.sharedLayersChanged.connect((_, change) => {
@@ -64,8 +68,8 @@ const wireLayerEvents = (
           object: {
             document_path: widget.model.filePath || null,
             layer_id: id,
-            ...(oldValue ? { old: oldValue as unknown as JSONObject } : {}),  // TODO: Better typing
-            ...(newValue ? { new: newValue as unknown as JSONObject } : {}),  // TODO: Better typing
+            ...(oldValue ? { old: oldValue as unknown as JSONObject } : {}), // TODO: Better typing
+            ...(newValue ? { new: newValue as unknown as JSONObject } : {}), // TODO: Better typing
           },
         },
       });
@@ -73,9 +77,11 @@ const wireLayerEvents = (
   });
 };
 
-const wireViewportEvents = (
-  {widget, clientId, emit}: IEventWiringProps,
-): void => {
+const wireViewportEvents = ({
+  widget,
+  clientId,
+  emit,
+}: IEventWiringProps): void => {
   const VIEWPORT_SCHEMA = 'https://schema.jupytergis.org/events/viewport/v1';
   // Awareness syncs the viewport every 200ms while the map moves, which is too
   // noisy for an event feed, so we throttle harder.
@@ -121,7 +127,6 @@ const wireViewportEvents = (
     );
   });
 };
-
 
 export const eventFeedPlugin: JupyterFrontEndPlugin<void> = {
   id: 'jupytergis:core:event-feed',
