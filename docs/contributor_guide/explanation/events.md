@@ -37,11 +37,12 @@ contributor) need to do when you add a feature that should emit an event.
 * Get the token from the JupyterLab logs output from the previous step. E.g., from the
   following output, copy the `<my-token>` value.:
 
-  ```
+  ```text
       Or copy and paste one of these URLs:
         http://localhost:8888/lab?token=<my-token>
         http://127.0.0.1:8888/lab?token=<my-token>
   ```
+
 * Start up the consumer **from an activated mamba environment in a separate terminal
   window**:
 
